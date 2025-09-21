@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Dashboard from "./Pages/Dashboard";
 import Login from "./Pages/Login";
-import ProtectedRoute from "./services/ProtectedRoute";
+import ProtectedRoute from "./Services/ProtectedRoute";
 import Staffs from "./components/Staffs";
 import ScanQRCode from "./components/ScanQRCode";
 import CreateToken from "./components/CreateToken";

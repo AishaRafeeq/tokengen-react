@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "../Services/api";
+import axios from "../services/api";
 import Sidebar from "./Sidebar";
 
 export default function StaffDashboard() {

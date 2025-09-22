@@ -1,6 +1,6 @@
 // CompletedTokens.jsx
 import React, { useEffect, useState } from "react";
-import API from "../Services/api"; // Axios helper
+import API from "../services/api"; // Axios helper
 import Sidebar from "./Sidebar"; // Adjust the path as needed
 
 import { Link } from "react-router-dom";

@@ -1,6 +1,6 @@
 // src/components/Queue/ManualEntry.jsx
 import React, { useState, useEffect } from "react";
-import API from "../../Services/api";
+import API from "../../services/api";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";

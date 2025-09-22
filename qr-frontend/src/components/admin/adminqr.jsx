@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../Sidebar";
-import axios from "../../Services/api";
+import axios from "../../services/api";
 
 export default function AdminTokensView() {
   const [tokens, setTokens] = useState([]);

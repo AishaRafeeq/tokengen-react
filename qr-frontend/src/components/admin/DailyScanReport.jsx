@@ -1,6 +1,6 @@
 // src/components/admin/DailyReport.jsx
 import React, { useEffect, useState } from "react";
-import axios from "../../Services/api";
+import axios from "../../services/api";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Sidebar from "../Sidebar";

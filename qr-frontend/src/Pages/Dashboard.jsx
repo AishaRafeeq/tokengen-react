@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "../Services/api";
+import axios from "../services/api";
 import Sidebar from "../components/Sidebar";
 
 export default function AdminDashboard() {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import API from "../Services/api";
+import API from "../services/api";
 import { useNavigate, NavLink, useLocation } from "react-router-dom";
 
 export default function Sidebar() {

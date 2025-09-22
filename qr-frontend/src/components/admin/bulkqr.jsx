@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API from "../../Services/api";
+import API from "../../services/api";
 import Sidebar from "../Sidebar";
 import { Link } from "react-router-dom";
 

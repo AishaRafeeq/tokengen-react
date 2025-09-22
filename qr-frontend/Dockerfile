@@ -1,8 +1,8 @@
-
 FROM node:20-alpine AS build
 
 
-WORKDIR /app
+RUN mkdir -p /opt/render/project/src/media
+WORKDIR /opt/render/project/src/media
 
 
 COPY package*.json ./

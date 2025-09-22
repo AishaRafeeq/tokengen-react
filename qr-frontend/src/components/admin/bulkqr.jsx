@@ -76,14 +76,12 @@ export default function BulkQRGenerator() {
   };
 
   return (
-    <div style={outerWrapper}>
-      <div style={sidebarWrapper}>
-        <Sidebar />
-      </div>
-      <div style={pageWrapper}>
+    <div style={mainBg}>
+      <Sidebar />
+      <div style={centeredContent}>
         <div style={cardWrapper}>
           <h2 style={title}>Bulk QR Token Generation</h2>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             <div style={{ marginBottom: 20 }}>
               <label style={{ fontWeight: 600, fontSize: 15 }}>Category</label>
               <select
@@ -124,114 +122,136 @@ export default function BulkQRGenerator() {
               <div style={{ color: "red", marginTop: 18, textAlign: "center" }}>{error}</div>
             )}
           </form>
-        </div>
-        {result && (
-          <div style={tableWrapper}>
-            <h3 style={tableTitle}>
-              Generated Tokens ({result.count})
-            </h3>
-            <table style={table}>
-              <thead>
-                <tr>
-                  <th style={th}>Token ID</th>
-                  <th style={th}>Status</th>
-                  <th style={th}>Category</th>
-                  <th style={th}>Queue Position</th>
-                  <th style={th}>QR Code</th>
-                  <th style={th}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.created.map((token) => (
-                  <tr key={token.token_id}>
-                    <td style={td}>{token.token_id}</td>
-                    <td style={td}>{token.status}</td>
-                    <td style={td}>{token.category.name}</td>
-                    <td style={td}>{token.queue_position ?? "-"}</td>
-                    <td style={td}>
-                      {token.qr_image ? (
-                        <img
-                          src={token.qr_image}
-                          alt="QR"
-                          style={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: 6,
-                            border: "1px solid #e2e8f0",
-                            background: "#fff",
-                            objectFit: "contain",
-                          }}
-                        />
-                      ) : "No QR"}
-                    </td>
-                    <td style={td}>
-                      {token.qr_image && (
-                        <>
-                          <button style={btn("#2563EB", "#fff")} onClick={() => downloadQR(token.qr_image, `qr_${token.token_id}.png`)}>Download</button>
-                          <button style={btn("#10B981", "#fff")} onClick={() => shareQR(token.qr_image, token)}>Share</button>
-                        </>
-                      )}
-                    </td>
+          {result && (
+            <div style={tableWrapper}>
+              <h3 style={tableTitle}>
+                Generated Tokens ({result.count})
+              </h3>
+              <table style={table}>
+                <thead>
+                  <tr>
+                    <th style={th}>Token ID</th>
+                    <th style={th}>Status</th>
+                    <th style={th}>Category</th>
+                    <th style={th}>Queue Position</th>
+                    <th style={th}>QR Code</th>
+                    <th style={th}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {result.created.map((token) => (
+                    <tr key={token.token_id}>
+                      <td style={td}>{token.token_id}</td>
+                      <td style={td}>{token.status}</td>
+                      <td style={td}>{token.category.name}</td>
+                      <td style={td}>{token.queue_position ?? "-"}</td>
+                      <td style={td}>
+                        {token.qr_image ? (
+                          <img
+                            src={token.qr_image}
+                            alt="QR"
+                            style={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: 6,
+                              border: "1px solid #e2e8f0",
+                              background: "#fff",
+                              objectFit: "contain",
+                            }}
+                          />
+                        ) : "No QR"}
+                      </td>
+                      <td style={td}>
+                        {token.qr_image && (
+                          <>
+                            <button style={btn("#2563EB", "#fff")} onClick={() => downloadQR(token.qr_image, `qr_${token.token_id}.png`)}>Download</button>
+                            <button style={btn("#10B981", "#fff")} onClick={() => shareQR(token.qr_image, token)}>Share</button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
+      <style>
+        {`
+          @media (max-width: 900px) {
+            .bulkqr-card {
+              max-width: 98vw !important;
+              border-radius: 0 !important;
+              padding: 18px 6px !important;
+              margin: 0 !important;
+              box-shadow: none !important;
+            }
+            .bulkqr-centered-content {
+              margin-left: 0 !important;
+              padding: 0 !important;
+              width: 100vw !important;
+              min-height: 100vh !important;
+              display: flex !important;
+              justify-content: center !important;
+              align-items: flex-start !important;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
 
 // --- Styles ---
-const outerWrapper = {
+const mainBg = {
   display: "flex",
   minHeight: "100vh",
-  background: "#F9FAFB",
+  width: "100vw",
+  background: "#F9FAFB", // unified background
 };
 
-const sidebarWrapper = {
-  width: 220,
-  minHeight: "100vh",
-  position: "fixed",
-  left: 0,
-  top: 0,
-  zIndex: 100,
-  background: "#fff",
-  boxShadow: "5px 0 15px rgba(0,0,0,0.07)",
-};
-
-const pageWrapper = {
+const centeredContent = {
   flex: 1,
-  marginLeft: 400,
-  padding: "48px 0 48px 0",
   display: "flex",
-  flexDirection: "column",
+  justifyContent: "center",
   alignItems: "center",
   minHeight: "100vh",
-  background: "linear-gradient(90deg, #F9FAFB 60%, #EFF6FF 100%)",
+  marginLeft: 240,
 };
+centeredContent.className = "bulkqr-centered-content";
 
 const cardWrapper = {
   width: "100%",
-  maxWidth: 540,
+  maxWidth: 900,
   background: "#fff",
-  borderRadius: 18,
-  boxShadow: "0 12px 36px rgba(37,99,235,0.10)",
-  padding: "40px 36px",
-  margin: "48px auto 32px auto",
+  borderRadius: 24,
+  boxShadow: "0 8px 32px rgba(37,99,235,0.10)",
+  padding: "38px 28px",
+  margin: "0 auto",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
+};
+cardWrapper.className = "bulkqr-card";
+
+const title = {
+  fontSize: 32,
+  fontWeight: 800,
+  marginBottom: 32,
+  textAlign: "center",
+  color: "#2563EB",
+  letterSpacing: 1,
 };
 
 const tableWrapper = {
   width: "100%",
-  maxWidth: 980,
+  maxWidth: 900,
   background: "#fff",
   borderRadius: 18,
-  boxShadow: "0 6px 24px rgba(37,99,235,0.10)",
-  padding: "40px 40px",
+  boxShadow: "0 6px 18px rgba(0,0,0,0.07)",
+  padding: "28px 18px",
+  margin: "0 auto",
   marginBottom: 32,
   overflowX: "auto",
 };
@@ -272,16 +292,7 @@ const td = {
   color: "#334155",
   textAlign: "center",
   verticalAlign: "middle",
-  background: "#F9FAFB",
-};
-
-const title = {
-  fontSize: 32,
-  fontWeight: 800,
-  marginBottom: 32,
-  textAlign: "center",
-  color: "#2563EB",
-  letterSpacing: 1,
+  background: "#fff",
 };
 
 const input = {

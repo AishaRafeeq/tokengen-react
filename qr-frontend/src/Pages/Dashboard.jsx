@@ -64,6 +64,41 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+      <style>
+        {`
+          @media (max-width: 900px) {
+            .dashboard-content {
+              margin-left: 0 !important;
+              padding: 0 !important;
+              width: 100vw !important;
+              min-height: 100vh !important;
+              justify-content: flex-start !important;
+              align-items: flex-start !important;
+            }
+            .dashboard-card {
+              max-width: 100vw !important;
+              border-radius: 0 !important;
+              padding: 16px 4px !important;
+              margin: 0 !important;
+              box-shadow: none !important;
+            }
+            .dashboard-stats-grid {
+              grid-template-columns: 1fr !important;
+              gap: 18px !important;
+              margin-bottom: 18px !important;
+            }
+            .dashboard-stat-box {
+              padding: 18px 10px !important;
+              border-radius: 10px !important;
+              font-size: 15px !important;
+            }
+            .dashboard-title {
+              font-size: 22px !important;
+              margin-bottom: 18px !important;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
@@ -75,8 +110,8 @@ const container = {
   width: "100vw",
   background: "linear-gradient(90deg, #F9FAFB 60%, #EFF6FF 100%)",
   fontFamily: "Segoe UI, sans-serif",
-  overflow: "hidden", // Prevent scrolling
-  position: "fixed", // Fill the viewport
+  overflow: "hidden",
+  position: "fixed",
   top: 0,
   left: 0,
   right: 0,
@@ -100,10 +135,11 @@ const content = {
   padding: "0",
   display: "flex",
   justifyContent: "center",
-  alignItems: "center", // Center vertically
+  alignItems: "center",
   minHeight: "100vh",
   width: "100%",
-};
+}
+content.className = "dashboard-content";
 
 const cardWrapper = {
   width: "100%",
@@ -117,8 +153,9 @@ const cardWrapper = {
   flexDirection: "column",
   alignItems: "center",
   maxHeight: "90vh",
-  overflow: "auto", // Internal scroll if needed
-};
+  overflow: "auto",
+}
+cardWrapper.className = "dashboard-card";
 
 const title = {
   fontSize: 32,
@@ -127,7 +164,8 @@ const title = {
   color: "#2563EB",
   letterSpacing: 1,
   textAlign: "center",
-};
+}
+title.className = "dashboard-title";
 
 const statsGrid = {
   display: "grid",
@@ -135,7 +173,8 @@ const statsGrid = {
   gap: 32,
   marginBottom: 32,
   width: "100%",
-};
+}
+statsGrid.className = "dashboard-stats-grid";
 
 const statBox = {
   padding: "32px 24px",
@@ -147,7 +186,8 @@ const statBox = {
   flexDirection: "column",
   alignItems: "center",
   transition: "box-shadow 0.2s",
-};
+}
+statBox.className = "dashboard-stat-box";
 
 const statValue = {
   fontSize: 36,

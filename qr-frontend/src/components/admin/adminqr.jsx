@@ -80,136 +80,165 @@ export default function AdminTokensView() {
   );
 
   return (
-    <div style={outerWrapper}>
-      <div style={sidebarWrapper}>
-        <Sidebar />
-      </div>
-      <div style={contentFill}>
-        <h2 style={title}>Admin Generated Tokens</h2>
-        <form style={formStyle} onSubmit={handleGenerate}>
-          <select
-            value={form.category}
-            onChange={e => setForm({ ...form, category: e.target.value })}
-            style={input}
-            required
-          >
-            <option value="">Select Category</option>
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
-            ))}
-          </select>
-          <select
-            value={form.status}
-            onChange={e => setForm({ ...form, status: e.target.value })}
-            style={input}
-            required
-          >
-            <option value="waiting">Waiting</option>
-            <option value="called">Called</option>
-            <option value="completed">Completed</option>
-          </select>
-          <button type="submit" style={btn("#2563EB", "#fff")}>Generate Token</button>
-        </form>
-        <input
-          type="text"
-          placeholder="Search by Token, Category, Status"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={searchInput}
-        />
-        {loading ? (
-          <div>Loading...</div>
-        ) : (
-          <div style={{ overflowX: "auto", width: "100%", marginTop: 24 }}>
-            <table style={table}>
-              <thead>
-                <tr>
-                  <th style={th}>Token ID</th>
-                  <th style={th}>Category</th>
-                  <th style={th}>Status</th>
-                  
-                  <th style={th}>Issued At</th>
-                  <th style={th}>QR Code</th>
-                  <th style={th}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTokens.length === 0 ? (
+    <div style={mainBg}>
+      <Sidebar />
+      <div style={centeredContent}>
+        <div style={cardWrapper}>
+          <h2 style={title}>Admin Generated Tokens</h2>
+          <form style={formStyle} onSubmit={handleGenerate}>
+            <select
+              value={form.category}
+              onChange={e => setForm({ ...form, category: e.target.value })}
+              style={input}
+              required
+            >
+              <option value="">Select Category</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+            <select
+              value={form.status}
+              onChange={e => setForm({ ...form, status: e.target.value })}
+              style={input}
+              required
+            >
+              <option value="waiting">Waiting</option>
+              <option value="called">Called</option>
+              <option value="completed">Completed</option>
+            </select>
+            <button type="submit" style={btn("#2563EB", "#fff")}>Generate Token</button>
+          </form>
+          <input
+            type="text"
+            placeholder="Search by Token, Category, Status"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={searchInput}
+          />
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <div style={{ overflowX: "auto", width: "100%", marginTop: 24 }}>
+              <table style={table}>
+                <thead>
                   <tr>
-                    <td style={td} colSpan={7}>No tokens found.</td>
+                    <th style={th}>Token ID</th>
+                    <th style={th}>Category</th>
+                    <th style={th}>Status</th>
+                    <th style={th}>Issued At</th>
+                    <th style={th}>QR Code</th>
+                    <th style={th}>Actions</th>
                   </tr>
-                ) : (
-                  filteredTokens.map(token => (
-                    <tr key={token.token_id}>
-                      <td style={td}>{token.token_id}</td>
-                      <td style={td}>{token.category_name}</td>
-                      <td style={td}>{token.status}</td>
-                      
-                      <td style={td}>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                          <span>{token.issued_at ? new Date(token.issued_at).toLocaleDateString() : "-"}</span>
-                          <span>{token.issued_at ? new Date(token.issued_at).toLocaleTimeString() : ""}</span>
-                        </div>
-                      </td>
-                      <td style={td}>
-                        {token.qr_code ? (
-                          <img src={token.qr_code} alt="QR" style={{ width: 40, height: 40, borderRadius: 6 }} />
-                        ) : "No QR"}
-                      </td>
-                      <td style={td}>
-                        {token.qr_code && (
-                          <>
-                            <button style={btn("#2563EB", "#fff")} onClick={() => downloadQR(token.qr_code, `qr_${token.token_id}.png`)}>Download</button>
-                            <button
-                              style={btn("#10B981", "#fff")}
-                              onClick={() => shareQR(token.qr_code, token)}
-                            >
-                              Share
-                            </button>
-                          </>
-                        )}
-                      </td>
+                </thead>
+                <tbody>
+                  {filteredTokens.length === 0 ? (
+                    <tr>
+                      <td style={td} colSpan={7}>No tokens found.</td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  ) : (
+                    filteredTokens.map(token => (
+                      <tr key={token.token_id}>
+                        <td style={td}>{token.token_id}</td>
+                        <td style={td}>{token.category_name}</td>
+                        <td style={td}>{token.status}</td>
+                        <td style={td}>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <span>{token.issued_at ? new Date(token.issued_at).toLocaleDateString() : "-"}</span>
+                            <span>{token.issued_at ? new Date(token.issued_at).toLocaleTimeString() : ""}</span>
+                          </div>
+                        </td>
+                        <td style={td}>
+                          {token.qr_code ? (
+                            <img src={token.qr_code} alt="QR" style={{ width: 40, height: 40, borderRadius: 6 }} />
+                          ) : "No QR"}
+                        </td>
+                        <td style={td}>
+                          {token.qr_code && (
+                            <>
+                              <button style={btn("#2563EB", "#fff")} onClick={() => downloadQR(token.qr_code, `qr_${token.token_id}.png`)}>Download</button>
+                              <button
+                                style={btn("#10B981", "#fff")}
+                                onClick={() => shareQR(token.qr_code, token)}
+                              >
+                                Share
+                              </button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
+      <style>
+        {`
+          @media (max-width: 900px) {
+            .adminqr-card {
+              max-width: 98vw !important;
+              border-radius: 0 !important;
+              padding: 18px 6px !important;
+              margin: 0 !important;
+              box-shadow: none !important;
+            }
+            .adminqr-centered-content {
+              margin-left: 0 !important;
+              padding: 0 !important;
+              width: 100vw !important;
+              min-height: 100vh !important;
+              display: flex !important;
+              justify-content: center !important;
+              align-items: flex-start !important;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
 
 // --- Styles ---
-const outerWrapper = {
+const mainBg = {
   display: "flex",
   minHeight: "100vh",
-  background: "#F9FAFB",
+  width: "100vw",
+  background: "#F9FAFB", // unified background
 };
 
-const sidebarWrapper = {
-  width: 220,
-  minHeight: "100vh",
-  position: "fixed",
-  left: 0,
-  top: 0,
-  zIndex: 100,
-  background: "#fff",
-  boxShadow: "5px 0 15px rgba(0,0,0,0.07)",
-};
-
-const contentFill = {
+const centeredContent = {
   flex: 1,
-  marginLeft: 400,
-  padding: "32px 0px 32px 32px",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
   minHeight: "100vh",
-  background: "#F9FAFB",
+  marginLeft: 240,
+};
+centeredContent.className = "adminqr-centered-content";
+
+const cardWrapper = {
+  width: "100%",
+  maxWidth: 900,
+  background: "#fff",
+  borderRadius: 18,
+  boxShadow: "0 6px 18px rgba(0,0,0,0.07)",
+  padding: "28px 18px",
+  margin: "0 auto",
   display: "flex",
   flexDirection: "column",
-  alignItems: "stretch",
-  justifyContent: "flex-start",
-  width: "100%",
+  alignItems: "center",
+};
+cardWrapper.className = "adminqr-card";
+
+const title = {
+  fontSize: 26,
+  fontWeight: 700,
+  marginBottom: 24,
+  color: "#2563EB",
+  textAlign: "left",
 };
 
 const formStyle = {
@@ -260,14 +289,6 @@ const td = {
   color: "#475569",
   textAlign: "center",
   verticalAlign: "middle",
-};
-
-const title = {
-  fontSize: 26,
-  fontWeight: 700,
-  marginBottom: 24,
-  color: "#2563EB",
-  textAlign: "left",
 };
 
 const btn = (bg, color) => ({

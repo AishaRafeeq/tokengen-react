@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import API from "../../Services/api";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Sidebar from "../Sidebar"; // Adjust the path as needed
+import Sidebar from "../Sidebar";
 
 export default function CategoryManager() {
   const [categories, setCategories] = useState([]);
@@ -66,15 +66,13 @@ export default function CategoryManager() {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#F9FAFB" }}>
-      <div style={sidebarContainer}>
-        <Sidebar />
-      </div>
-      <div style={pageWrapper}>
+    <div style={mainBg}>
+      <Sidebar />
+      <div style={centeredContent}>
         <ToastContainer />
         <div style={cardWrapper}>
           <h2 style={title}>Category Management</h2>
-          <form onSubmit={handleAdd} style={{ display: "flex", gap: 8, marginBottom: 24 }}>
+          <form onSubmit={handleAdd} style={{ display: "flex", gap: 8, marginBottom: 24, width: "100%" }}>
             <input
               type="text"
               placeholder="Category Name"
@@ -129,7 +127,7 @@ export default function CategoryManager() {
             </tbody>
           </table>
           {editId && (
-            <form onSubmit={handleEdit} style={{ display: "flex", gap: 8, marginTop: 16 }}>
+            <form onSubmit={handleEdit} style={{ display: "flex", gap: 8, marginTop: 16, width: "100%" }}>
               <input
                 type="text"
                 value={editName}
@@ -149,51 +147,69 @@ export default function CategoryManager() {
           )}
         </div>
       </div>
+      <style>
+        {`
+          @media (max-width: 900px) {
+            .category-card {
+              max-width: 98vw !important;
+              border-radius: 0 !important;
+              padding: 18px 6px !important;
+              margin: 0 !important;
+              box-shadow: none !important;
+            }
+            .category-centered-content {
+              margin-left: 0 !important;
+              padding: 0 !important;
+              width: 100vw !important;
+              min-height: 100vh !important;
+              display: flex !important;
+              justify-content: center !important;
+              align-items: flex-start !important;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
 
-
-const sidebarContainer = {
-  width: 220,
-  minHeight: "100vh",
-  position: "fixed",
-  left: 0,
-  top: 0,
-  zIndex: 100,
-  background: "#fff",
-  boxShadow: "5px 0 15px rgba(0,0,0,0.07)",
-};
-
-const pageWrapper = {
-  flex: 1,
-  marginLeft: 450, 
-  padding: "40px 0 40px 0",
+const mainBg = {
   display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
   minHeight: "100vh",
+  width: "100vw",
   background: "#F9FAFB",
 };
+
+const centeredContent = {
+  flex: 1,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  minHeight: "100vh",
+  marginLeft: 240,
+};
+centeredContent.className = "category-centered-content";
 
 const cardWrapper = {
   width: "100%",
   maxWidth: 500,
   background: "#fff",
-  borderRadius: 16,
-  boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
-  padding: 32,
-  margin: "40px auto",
+  borderRadius: 18,
+  boxShadow: "0 6px 18px rgba(0,0,0,0.07)",
+  padding: "28px 18px",
+  margin: "0 auto",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
 };
+cardWrapper.className = "category-card";
 
 const title = {
   fontSize: 24,
   fontWeight: 700,
   marginBottom: 24,
   color: "#2563EB",
+  textAlign: "center",
 };
 
 const input = {
@@ -201,6 +217,7 @@ const input = {
   borderRadius: 8,
   padding: "8px 10px",
   fontSize: 16,
+  minWidth: 80,
 };
 
 const btn = (bg, color, mt = 0) => ({
@@ -264,15 +281,4 @@ const catColor = {
   borderRadius: "50%",
   display: "inline-block",
   margin: "0 auto",
-};
-
-const catRow = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  padding: "12px",
-  borderBottom: "1px solid #E2E8F0",
-  color: "#475569",
-  textAlign: "center",
-  verticalAlign: "middle",
 };

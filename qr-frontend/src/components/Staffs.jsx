@@ -162,16 +162,16 @@ export default function StaffManagement() {
   }
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#F9FAFB" }}>
+    <div style={container}>
       <div style={sidebarContainer}>
         <Sidebar />
       </div>
-      <div style={{ flex: 1, marginLeft: 220, padding: "20px 40px" }}>
+      <div style={mainContent}>
         <ToastContainer position="top-right" autoClose={2500} />
         <div style={header}>
           <div>
-            <h1 style={{ margin: 0, fontSize: 24 }}>Staff Management</h1>
-            <p style={{ margin: 0, color: '#64748B' }}>Manage staff accounts and permissions</p>
+            <h1 style={headerTitle}>Staff Management</h1>
+            <p style={headerDesc}>Manage staff accounts and permissions</p>
           </div>
           <button onClick={openNewUserModal} style={btnPrimary}>+ Add Staff</button>
         </div>
@@ -265,11 +265,60 @@ export default function StaffManagement() {
           </div>
         )}
       </div>
+      <style>
+        {`
+          @media (max-width: 900px) {
+            .staff-main-content {
+              margin-left: 0 !important;
+              padding: 8px 2vw !important;
+              width: 100vw !important;
+              min-height: 100vh !important;
+            }
+            .staff-header {
+              flex-direction: column !important;
+              align-items: flex-start !important;
+              gap: 10px !important;
+              padding: 10px 0 !important;
+            }
+            .staff-header-title {
+              font-size: 18px !important;
+            }
+            .staff-table-wrapper {
+              border-radius: 0 !important;
+              padding: 0 !important;
+              box-shadow: none !important;
+              width: 100vw !important;
+              overflow-x: auto !important;
+            }
+            .staff-table-header, .staff-table-row {
+              grid-template-columns: 1.5fr 2fr 1.5fr 2fr 1.5fr 1.5fr !important;
+              font-size: 12px !important;
+              padding: 8px 6px !important;
+            }
+            .staff-category-badge {
+              font-size: 11px !important;
+              padding: 2px 4px !important;
+            }
+            .staff-btn-edit, .staff-btn-delete, .staff-btn-view {
+              font-size: 11px !important;
+              padding: 2px 6px !important;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
 
 /* --- Styles --- */
+const container = {
+  display: "flex",
+  minHeight: "100vh",
+  background: "#F9FAFB",
+  width: "100vw",
+  overflow: "hidden",
+};
+
 const sidebarContainer = {
   width: 220,
   minHeight: "100vh",
@@ -281,17 +330,118 @@ const sidebarContainer = {
   boxShadow: "5px 0 15px rgba(0,0,0,0.07)",
 };
 
-const header = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px' };
-const btnPrimary = { padding: '6px 12px', borderRadius: 8, border: 'none', background: '#2563EB', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 14 };
-const tableWrapper = { width: '100%', margin: '0 auto', border: '1px solid #E2E8F0', borderRadius: 12, background: '#fff', overflow: 'hidden' };
-const tableHeader = { display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr 1.5fr 1fr 1fr', padding: '16px 20px', background: '#F8FAFC', color: '#475569', fontSize: 14, fontWeight: 600 };
-const tableRow = { display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr 1.5fr 1fr 1fr', padding: '12px 20px', borderTop: '1px solid #F1F5F9', fontSize: 14, alignItems: 'center' };
-const emptyText = { padding: 24, textAlign: 'center', color: '#64748B' };
-const categoryBadge = { padding: '2px 6px', background: '#2563EB', borderRadius: 4, color: '#fff', fontSize: 12 };
+const mainContent = {
+  flex: 1,
+  marginLeft: 220,
+  padding: "20px 40px",
+  width: "100%",
+};
+mainContent.className = "staff-main-content";
 
-const btnEdit = { padding: '3px 8px', borderRadius: 4, border: 'none', background: '#FACC15', color: '#000', fontSize: 12, cursor: 'pointer' };
-const btnDelete = { padding: '3px 8px', borderRadius: 4, border: 'none', background: '#DC2626', color: '#fff', fontSize: 12, cursor: 'pointer' };
-const btnView = { padding: '3px 8px', borderRadius: 4, border: 'none', background: '#4ADE80', color: '#000', fontSize: 12, cursor: 'pointer' };
+const header = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '16px 24px',
+};
+header.className = "staff-header";
+
+const headerTitle = {
+  margin: 0,
+  fontSize: 24,
+};
+headerTitle.className = "staff-header-title";
+
+const headerDesc = {
+  margin: 0,
+  color: '#64748B',
+};
+
+const btnPrimary = {
+  padding: '6px 12px',
+  borderRadius: 8,
+  border: 'none',
+  background: '#2563EB',
+  color: '#fff',
+  fontWeight: 600,
+  cursor: 'pointer',
+  fontSize: 14,
+};
+
+const tableWrapper = {
+  width: '100%',
+  margin: '0 auto',
+  border: '1px solid #E2E8F0',
+  borderRadius: 12,
+  background: '#fff',
+  overflow: 'hidden',
+};
+tableWrapper.className = "staff-table-wrapper";
+
+const tableHeader = {
+  display: 'grid',
+  gridTemplateColumns: '1.2fr 1.5fr 1fr 1.5fr 1fr 1fr',
+  padding: '16px 20px',
+  background: '#F8FAFC',
+  color: '#475569',
+  fontSize: 14,
+  fontWeight: 600,
+};
+tableHeader.className = "staff-table-header";
+
+const tableRow = {
+  display: 'grid',
+  gridTemplateColumns: '1.2fr 1.5fr 1fr 1.5fr 1fr 1fr',
+  padding: '12px 20px',
+  borderTop: '1px solid #F1F5F9',
+  fontSize: 14,
+  alignItems: 'center',
+};
+tableRow.className = "staff-table-row";
+
+const emptyText = { padding: 24, textAlign: 'center', color: '#64748B' };
+
+const categoryBadge = {
+  padding: '2px 6px',
+  background: '#2563EB',
+  borderRadius: 4,
+  color: '#fff',
+  fontSize: 12,
+};
+categoryBadge.className = "staff-category-badge";
+
+const btnEdit = {
+  padding: '3px 8px',
+  borderRadius: 4,
+  border: 'none',
+  background: '#FACC15',
+  color: '#000',
+  fontSize: 12,
+  cursor: 'pointer',
+};
+btnEdit.className = "staff-btn-edit";
+
+const btnDelete = {
+  padding: '3px 8px',
+  borderRadius: 4,
+  border: 'none',
+  background: '#DC2626',
+  color: '#fff',
+  fontSize: 12,
+  cursor: 'pointer',
+};
+btnDelete.className = "staff-btn-delete";
+
+const btnView = {
+  padding: '3px 8px',
+  borderRadius: 4,
+  border: 'none',
+  background: '#4ADE80',
+  color: '#000',
+  fontSize: 12,
+  cursor: 'pointer',
+};
+btnView.className = "staff-btn-view";
 
 const overlay = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 };
 const modal = { background: '#F9FAFB', padding: 24, borderRadius: 16, width: 'min(700px, 95vw)', maxHeight: '90vh', overflowY: 'auto', position: 'relative', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 24px rgba(0,0,0,0.15)' };

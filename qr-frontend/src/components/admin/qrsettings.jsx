@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from "../../Services/api";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Sidebar from "../Sidebar"; // Adjust the path as needed
+import Sidebar from "../Sidebar";
 
 export default function QRSettingsManager() {
   const [settings, setSettings] = useState({
@@ -55,183 +55,199 @@ export default function QRSettingsManager() {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#F9FAFB" }}>
-      <div
-        style={{
-          width: 220,
-          minHeight: "100vh",
-          position: "fixed",
-          left: 0,
-          top: 0,
-          zIndex: 100,
-          background: "#fff",
-          boxShadow: "5px 0 15px rgba(0,0,0,0.07)",
-        }}
-      >
-        <Sidebar />
-      </div>
-      <div style={pageWrapper}>
-        <div style={cardWrapper}>
-          <ToastContainer />
-          <h2 style={title}>QR Code Settings</h2>
-          <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%" }}>
-            <label>
-              Default Size:
-              <input
-                type="number"
-                name="size"
-                value={settings.size}
-                min={128}
-                max={1024}
-                onChange={handleChange}
-                style={input}
-              />
-            </label>
-            <label>
-              Default Border:
-              <input
-                type="number"
-                name="border"
-                value={settings.border}
-                min={1}
-                max={20}
-                onChange={handleChange}
-                style={input}
-              />
-            </label>
-            <label>
-              Error Correction:
-              <select
-                name="error_correction"
-                value={settings.error_correction}
-                onChange={handleChange}
-                style={input}
-              >
-                <option value="L">Low</option>
-                <option value="M">Medium</option>
-                <option value="Q">Quartile</option>
-                <option value="H">High</option>
-              </select>
-            </label>
-            <label>
-              Default Expiry Hours:
-              <input
-                type="number"
-                name="expiry_hours"
-                value={settings.expiry_hours}
-                min={1}
-                max={168}
-                onChange={handleChange}
-                style={input}
-              />
-            </label>
-            <label>
-              Generation Start Time:
-              <input
-                type="time"
-                name="generation_start_time"
-                value={settings.generation_start_time}
-                onChange={handleChange}
-                style={input}
-              />
-            </label>
-            <label>
-              Generation End Time:
-              <input
-                type="time"
-                name="generation_end_time"
-                value={settings.generation_end_time}
-                onChange={handleChange}
-                style={input}
-              />
-            </label>
-            <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <input
-                type="checkbox"
-                name="daily_reset"
-                checked={!!settings.daily_reset}
-                onChange={handleChange}
-              />
-              Reset tokens daily
-            </label>
-            <button type="submit" style={btn("#2563EB", "#fff")} disabled={loading}>
+    <div style={mainBg}>
+      <Sidebar />
+      <div style={centeredContent}>
+        <ToastContainer />
+        <form onSubmit={handleSave} style={formGrid}>
+          <h2 style={title}>⚙️ QR Code Settings</h2>
+          <div style={row}>
+            <label style={label}>Default Size:</label>
+            <input
+              type="number"
+              name="size"
+              value={settings.size}
+              min={128}
+              max={1024}
+              onChange={handleChange}
+              style={input}
+            />
+          </div>
+          <div style={row}>
+            <label style={label}>Default Border:</label>
+            <input
+              type="number"
+              name="border"
+              value={settings.border}
+              min={1}
+              max={20}
+              onChange={handleChange}
+              style={input}
+            />
+          </div>
+          <div style={row}>
+            <label style={label}>Error Correction:</label>
+            <select
+              name="error_correction"
+              value={settings.error_correction}
+              onChange={handleChange}
+              style={input}
+            >
+              <option value="L">Low</option>
+              <option value="M">Medium</option>
+              <option value="Q">Quartile</option>
+              <option value="H">High</option>
+            </select>
+          </div>
+          <div style={row}>
+            <label style={label}>Expiry Hours:</label>
+            <input
+              type="number"
+              name="expiry_hours"
+              value={settings.expiry_hours}
+              min={1}
+              max={168}
+              onChange={handleChange}
+              style={input}
+            />
+          </div>
+          <div style={row}>
+            <label style={label}>Generation Start Time:</label>
+            <input
+              type="time"
+              name="generation_start_time"
+              value={settings.generation_start_time}
+              onChange={handleChange}
+              style={input}
+            />
+          </div>
+          <div style={row}>
+            <label style={label}>Generation End Time:</label>
+            <input
+              type="time"
+              name="generation_end_time"
+              value={settings.generation_end_time}
+              onChange={handleChange}
+              style={input}
+            />
+          </div>
+          <div style={row}>
+            <label style={label}>Reset tokens daily:</label>
+            <input
+              type="checkbox"
+              name="daily_reset"
+              checked={!!settings.daily_reset}
+              onChange={handleChange}
+              style={{ ...input, width: 22, height: 22 }}
+            />
+          </div>
+          <div style={row}>
+            <button type="submit" style={btn} disabled={loading}>
               {loading ? "Saving..." : "Save Settings"}
             </button>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
+      <style>
+        {`
+          @media (max-width: 900px) {
+            .qr-centered-content {
+              margin-left: 0 !important;
+              padding: 0 !important;
+              width: 100vw !important;
+              min-height: 100vh !important;
+              display: flex !important;
+              justify-content: center !important;
+              align-items: flex-start !important;
+            }
+            .qr-form-grid {
+              grid-template-columns: 1fr !important;
+              max-width: 98vw !important;
+              padding: 18px 6px !important;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
 
-const pageWrapper = {
-  flex: 1,
-  marginLeft: 450, 
-  padding: "48px 0 48px 0",
+/* -------- Styles -------- */
+const mainBg = {
   display: "flex",
-  flexDirection: "column",
+  minHeight: "100vh",
+  width: "100vw",
+  background: "#F9FAFB",
+};
+
+const centeredContent = {
+  flex: 1,
+  display: "flex",
+  justifyContent: "center",
   alignItems: "center",
   minHeight: "100vh",
-  background: "linear-gradient(90deg, #F9FAFB 60%, #EFF6FF 100%)",
+  marginLeft: 240,
 };
+centeredContent.className = "qr-centered-content";
 
-const cardWrapper = {
-  width: "100%",
-  maxWidth: 380, // Focused, not long
+const formGrid = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: 24,
   background: "#fff",
   borderRadius: 18,
-  boxShadow: "0 12px 36px rgba(37,99,235,0.10)",
-  padding: "32px 24px",
-  margin: "48px auto 32px auto",
-  display: "flex",
-  flexDirection: "column",
+  boxShadow: "0 6px 18px rgba(0,0,0,0.07)",
+  padding: "32px 36px",
+  maxWidth: 700,
+  width: "100%",
   alignItems: "center",
 };
+formGrid.className = "qr-form-grid";
 
-const title = {
-  fontSize: 32,
-  fontWeight: 800,
-  marginBottom: 32,
-  textAlign: "center",
-  color: "#2563EB",
-  letterSpacing: 1,
+const row = {
+  display: "flex",
+  alignItems: "center",
+  gap: 18,
+  marginBottom: 0,
+};
+
+const label = {
+  fontWeight: 600,
+  fontSize: 16,
+  color: "#1E3A8A",
+  minWidth: 180,
+  textAlign: "right",
 };
 
 const input = {
   border: "1px solid #CBD5E1",
-  borderRadius: 10,
-  padding: "12px 10px",
-  fontSize: 16,
-  width: "60%",
-  marginLeft: 8,
+  borderRadius: 8,
+  padding: "10px 12px",
+  fontSize: 15,
+  width: "100%",
   background: "#F8FAFC",
-  marginBottom: 8,
 };
 
-const btn = (bg, color) => ({
-  padding: "10px 18px",
-  borderRadius: 10,
+const btn = {
+  padding: "12px 32px",
+  borderRadius: 8,
   border: "none",
-  background: bg,
-  color,
-  fontWeight: 700,
+  background: "#2563EB",
+  color: "#fff",
+  fontWeight: 600,
   cursor: "pointer",
-  marginLeft: 0,
-  marginRight: 8,
+  fontSize: 16,
+  marginLeft: "auto",
+  marginRight: "auto",
   transition: "all 0.2s ease",
   boxShadow: "0 2px 8px rgba(37,99,235,0.08)",
-});
+};
 
-const panelWrapper = {
-  width: "100%",
-  maxWidth: 420,
-  background: "linear-gradient(90deg, #F0F9FF 60%, #E0F2FE 100%)",
-  border: "1px solid #E5E7EB",
-  borderRadius: 14,
-  padding: "32px 24px",
-  margin: "48px auto 32px auto",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "flex-start",
-  boxShadow: "0 2px 12px rgba(37,99,235,0.06)",
+const title = {
+  gridColumn: "1 / span 2",
+  fontSize: 28,
+  fontWeight: 700,
+  marginBottom: 18,
+  textAlign: "center",
+  color: "#1E3A8A",
 };

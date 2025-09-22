@@ -7,7 +7,6 @@ import Sidebar from "../Sidebar";
 
 export default function QueueDashboard() {
   const [liveQueues, setLiveQueues] = useState([]);
-  const [scannerStatus, setScannerStatus] = useState([]);
   const [tokenStatus, setTokenStatus] = useState(null);
   const [tokenIdInput, setTokenIdInput] = useState("");
   const [emergencyAction, setEmergencyAction] = useState("pause");
@@ -51,16 +50,6 @@ export default function QueueDashboard() {
   useEffect(() => {
     fetchLiveQueues();
   }, []);
-
-  // Fetch scanner status
-  const fetchScannerStatus = async () => {
-    try {
-      const res = await API.get("scanner-status/");
-      setScannerStatus(Array.isArray(res.data) ? res.data : res.data.results || []);
-    } catch (err) {
-      toast.error("Failed to fetch scanner status");
-    }
-  };
 
   // Fetch token status
   const fetchTokenStatus = async () => {
@@ -107,6 +96,38 @@ export default function QueueDashboard() {
       ),
     }))
     .filter((q) => q.tokens.length > 0);
+
+  // Add filter state for scanner status
+  const [scanFilter, setScanFilter] = useState("ALL");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [scannerStatus, setScannerStatus] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Build query params for backend
+  const fetchScannerStatus = async () => {
+    setLoading(true);
+    try {
+      let params = [];
+      if (scanFilter && scanFilter !== "ALL") params.push(`status=${scanFilter}`);
+      if (startDate) params.push(`from=${startDate}`);
+      if (endDate) params.push(`to=${endDate}`);
+      let url = "scanner-status/";
+      if (params.length) url += "?" + params.join("&");
+      const res = await API.get(url);
+      setScannerStatus(Array.isArray(res.data) ? res.data : res.data.results || []);
+    } catch (err) {
+      toast.error("Failed to fetch scanner status");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch scanner status on mount and when filters change
+  useEffect(() => {
+    fetchScannerStatus();
+    // eslint-disable-next-line
+  }, [scanFilter, startDate, endDate]);
 
   return (
     <div style={containerStyle}>
@@ -299,51 +320,120 @@ export default function QueueDashboard() {
 
           {/* Scanner Status */}
           <Route
-  path="scanner-status"
-  element={
-    <section>
-      <h2 style={sectionTitle}>QR Code Scanner Status</h2>
-      <div style={card}>
-        <table style={table}>
-          <thead>
-            <tr>
-              <th style={th}>Token ID</th>
-              <th style={th}>Status</th>
-              <th style={th}>Category</th>
-              <th style={th}>Scanned By</th>
-              <th style={th}>Scan Time</th>
-              <th style={th}>Verification Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {scannerStatus.length > 0 ? (
-              scannerStatus.map((row, idx) => (
-                <tr key={row.token_id || idx}>
-                  <td style={td}>{row.token_id || "-"}</td>
-                  <td style={td}>{row.status || "-"}</td>
-                  <td style={td}>{row.category?.name || "-"}</td>
-                  <td style={td}>{row.scanned_by?.username || "-"}</td>
-                  <td style={td}>{row.scan_time ? new Date(row.scan_time).toLocaleString() : "-"}</td>
-                  <td style={td}>{row.verification_status || "-"}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} style={emptyCell}>
-                  No scanner data
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      <button onClick={fetchScannerStatus} style={btn("#2563EB", "#fff")}>
-        Refresh Scanner Status
-      </button>
-    </section>
-  }
-/>
-
+            path="scanner-status"
+            element={
+              <section>
+                <h2 style={sectionTitle}>QR Code Scanner Status</h2>
+                <div style={{ ...card, marginBottom: 24 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 16,
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                      marginBottom: 16,
+                    }}
+                  >
+                    <div>
+                      <label htmlFor="scan-filter" style={filterLabel}>
+                        Status:
+                      </label>
+                      <select
+                        id="scan-filter"
+                        value={scanFilter}
+                        onChange={(e) => setScanFilter(e.target.value)}
+                        style={{ ...input, minWidth: 120, marginLeft: 8 }}
+                      >
+                        <option value="ALL">All</option>
+                        <option value="SUCCESS">Success</option>
+                        <option value="FAILED">Failed</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="start-date" style={filterLabel}>
+                        Start Date:
+                      </label>
+                      <input
+                        id="start-date"
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        style={{ ...input, minWidth: 140, marginLeft: 8 }}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="end-date" style={filterLabel}>
+                        End Date:
+                      </label>
+                      <input
+                        id="end-date"
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        style={{ ...input, minWidth: 140, marginLeft: 8 }}
+                      />
+                    </div>
+                    <button
+                      onClick={fetchScannerStatus}
+                      style={{ ...btn("#2563EB", "#fff"), minWidth: 120 }}
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
+                  <table style={table}>
+                    <thead>
+                      <tr>
+                        <th style={th}>Token ID</th>
+                        <th style={th}>Status</th>
+                        <th style={th}>Category</th>
+                        <th style={th}>Scanned By</th>
+                        <th style={th}>Scan Time</th>
+                        <th style={th}>Verification Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loading ? (
+                        <tr>
+                          <td colSpan={6} style={emptyCell}>Loading...</td>
+                        </tr>
+                      ) : scannerStatus.length > 0 ? (
+                        scannerStatus.map((row, idx) => (
+                          <tr key={row.token_id || idx}>
+                            <td style={td}>{row.token_id || "-"}</td>
+                            <td style={td}>{row.status || "-"}</td>
+                            <td style={td}>{row.category?.name || "-"}</td>
+                            <td style={td}>{row.scanned_by?.username || "-"}</td>
+                            <td style={td}>{row.scan_time ? new Date(row.scan_time).toLocaleString() : "-"}</td>
+                            <td style={{
+                              ...td,
+                              color:
+                                row.verification_status === "SUCCESS"
+                                  ? "green"
+                                  : row.verification_status === "FAILED"
+                                  ? "red"
+                                  : "#000",
+                              fontWeight: 700,
+                            }}>
+                              {row.verification_status || "-"}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={6} style={emptyCell}>
+                            No scanner data
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                <button onClick={fetchScannerStatus} style={btn("#2563EB", "#fff")}>
+                  Refresh Scanner Status
+                </button>
+              </section>
+            }
+          />
 
           <Route path="*" element={<div>Select a section above.</div>} />
         </Routes>
@@ -368,3 +458,8 @@ const btn = (bg, color) => ({ padding: "10px 16px", borderRadius: 8, border: "no
 const th = { textAlign: "center", padding: "12px", background: "#F6F8FF", fontWeight: 700, borderBottom: "2px solid #E5E7EB", color: "#0B3A6A", fontSize: 15 };
 const td = { textAlign: "center", padding: "12px", borderBottom: "1px solid #E5E7EB", fontSize: 15, verticalAlign: "middle" };
 const categoryHighlight = { fontWeight: 700, fontSize: 18, color: "#0B3A6A", background: "#F6F8FF", padding: "10px 0", borderRadius: "8px 8px 0 0", marginBottom: 0, textAlign: "center", letterSpacing: 1, boxShadow: "0 2px 8px rgba(37,99,235,0.05)", borderBottom: "1px solid #E0E7EF" };
+const filterLabel = {
+  fontWeight: 600,
+  fontSize: 15,
+  color: "#334155",
+};

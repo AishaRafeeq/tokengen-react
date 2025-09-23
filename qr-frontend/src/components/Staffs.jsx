@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import API from '../services/api';
+import API from '../Services/api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from "./Sidebar";
@@ -215,6 +215,74 @@ export default function StaffManagement() {
           )}
         </div>
 
+        {/* 👇 Add/Edit Staff Modal */}
+        {showModal && (
+          <div style={overlay} onClick={() => setShowModal(false)}>
+            <div style={modal} onClick={(e) => e.stopPropagation()}>
+              <button style={close} onClick={() => setShowModal(false)}>✕</button>
+              <h2>{editingId ? 'Edit Staff' : 'Add Staff'}</h2>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+  <div style={formGroup}>
+    <label style={label}>Username</label>
+    <input name="username" value={form.username} onChange={handleChange} style={input} />
+    {errors.username && <div style={error}>{errors.username}</div>}
+  </div>
+
+  <div style={formGroup}>
+    <label style={label}>Email</label>
+    <input name="email" type="email" value={form.email} onChange={handleChange} style={input} />
+    {errors.email && <div style={error}>{errors.email}</div>}
+  </div>
+
+  <div style={formGroup}>
+    <label style={label}>First Name</label>
+    <input name="first_name" value={form.first_name} onChange={handleChange} style={input} />
+  </div>
+
+  <div style={formGroup}>
+    <label style={label}>Last Name</label>
+    <input name="last_name" value={form.last_name} onChange={handleChange} style={input} />
+  </div>
+
+  {!editingId && (
+    <div style={formGroup}>
+      <label style={label}>Password</label>
+      <input name="password" type="password" value={form.password} onChange={handleChange} style={input} />
+      {errors.password && <div style={error}>{errors.password}</div>}
+    </div>
+  )}
+
+  <div style={formGroup}>
+    <label style={label}>Categories</label>
+    <select
+      multiple
+      value={form.categories}
+      onChange={handleCategoryChange}
+      style={multiSelect}
+    >
+      {categories.map((cat) => (
+        <option key={cat.id} value={cat.id}>{cat.name}</option>
+      ))}
+    </select>
+    {errors.categories && <div style={error}>{errors.categories}</div>}
+  </div>
+
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 }}>
+    <label><input type="checkbox" name="can_scan_qr" checked={form.can_scan_qr} onChange={handleChange} /> Can Scan QR</label>
+    <label><input type="checkbox" name="can_generate_qr" checked={form.can_generate_qr} onChange={handleChange} /> Can Generate QR</label>
+    <label><input type="checkbox" name="can_verify_qr" checked={form.can_verify_qr} onChange={handleChange} /> Can Verify QR</label>
+    <label><input type="checkbox" name="can_view_analytics" checked={form.can_view_analytics} onChange={handleChange} /> Can View Analytics</label>
+  </div>
+
+  <button type="submit" style={btnPrimary}>
+    {editingId ? 'Update Staff' : 'Add Staff'}
+  </button>
+</form>
+
+            </div>
+          </div>
+        )}
+
         {/* Activity Modal */}
         {activityModal.open && (
           <div style={overlay} onClick={() => setActivityModal({ open: false, staff: null, logs: [], stats: null, loading: false })}>
@@ -265,194 +333,68 @@ export default function StaffManagement() {
           </div>
         )}
       </div>
-      <style>
-        {`
-          @media (max-width: 900px) {
-            .staff-main-content {
-              margin-left: 0 !important;
-              padding: 8px 2vw !important;
-              width: 100vw !important;
-              min-height: 100vh !important;
-            }
-            .staff-header {
-              flex-direction: column !important;
-              align-items: flex-start !important;
-              gap: 10px !important;
-              padding: 10px 0 !important;
-            }
-            .staff-header-title {
-              font-size: 18px !important;
-            }
-            .staff-table-wrapper {
-              border-radius: 0 !important;
-              padding: 0 !important;
-              box-shadow: none !important;
-              width: 100vw !important;
-              overflow-x: auto !important;
-            }
-            .staff-table-header, .staff-table-row {
-              grid-template-columns: 1.5fr 2fr 1.5fr 2fr 1.5fr 1.5fr !important;
-              font-size: 12px !important;
-              padding: 8px 6px !important;
-            }
-            .staff-category-badge {
-              font-size: 11px !important;
-              padding: 2px 4px !important;
-            }
-            .staff-btn-edit, .staff-btn-delete, .staff-btn-view {
-              font-size: 11px !important;
-              padding: 2px 6px !important;
-            }
-          }
-        `}
-      </style>
     </div>
   );
 }
 
-/* --- Styles --- */
-const container = {
-  display: "flex",
-  minHeight: "100vh",
-  background: "#F9FAFB",
-  width: "100vw",
-  overflow: "hidden",
-};
-
-const sidebarContainer = {
-  width: 220,
-  minHeight: "100vh",
-  position: "fixed",
-  left: 0,
-  top: 0,
-  zIndex: 100,
-  background: "#fff",
-  boxShadow: "5px 0 15px rgba(0,0,0,0.07)",
-};
-
-const mainContent = {
-  flex: 1,
-  marginLeft: 220,
-  padding: "20px 40px",
-  width: "100%",
-};
-mainContent.className = "staff-main-content";
-
-const header = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: '16px 24px',
-};
-header.className = "staff-header";
-
-const headerTitle = {
-  margin: 0,
-  fontSize: 24,
-};
-headerTitle.className = "staff-header-title";
-
-const headerDesc = {
-  margin: 0,
-  color: '#64748B',
-};
-
-const btnPrimary = {
-  padding: '6px 12px',
-  borderRadius: 8,
-  border: 'none',
-  background: '#2563EB',
-  color: '#fff',
-  fontWeight: 600,
-  cursor: 'pointer',
-  fontSize: 14,
-};
-
-const tableWrapper = {
-  width: '100%',
-  margin: '0 auto',
-  border: '1px solid #E2E8F0',
-  borderRadius: 12,
+// --- Styles ---
+const input = {
+  padding: '8px 12px',
+  fontSize: '14px',
+  border: '1px solid #CBD5E1',
+  borderRadius: '6px',
+  outline: 'none',
   background: '#fff',
-  overflow: 'hidden',
+  transition: 'border 0.2s ease',
+  width: '100%',
+  maxWidth: '500px', 
+  alignSelf: 'center'
 };
-tableWrapper.className = "staff-table-wrapper";
 
-const tableHeader = {
-  display: 'grid',
-  gridTemplateColumns: '1.2fr 1.5fr 1fr 1.5fr 1fr 1fr',
-  padding: '16px 20px',
-  background: '#F8FAFC',
-  color: '#475569',
-  fontSize: 14,
+
+const multiSelect = {
+  ...input,
+  height: 80,
+  overflowY: 'auto',
+};
+
+
+const label = {
+  marginBottom: 6,
   fontWeight: 600,
+  color: '#334155',
+  display: 'block',
 };
-tableHeader.className = "staff-table-header";
 
-const tableRow = {
-  display: 'grid',
-  gridTemplateColumns: '1.2fr 1.5fr 1fr 1.5fr 1fr 1fr',
-  padding: '12px 20px',
-  borderTop: '1px solid #F1F5F9',
-  fontSize: 14,
-  alignItems: 'center',
+const error = {
+  marginTop: 4,
+  fontSize: 12,
+  color: '#DC2626',
 };
-tableRow.className = "staff-table-row";
 
+const formGroup = {
+  display: 'flex',
+  flexDirection: 'column',
+};
+
+const container = { display: "flex", minHeight: "100vh", background: "#F9FAFB", width: "100vw", overflow: "hidden" };
+const sidebarContainer = { width: 220, minHeight: "100vh", position: "fixed", left: 0, top: 0, zIndex: 100, background: "#fff", boxShadow: "5px 0 15px rgba(0,0,0,0.07)" };
+const mainContent = { flex: 1, marginLeft: 220, padding: "20px 40px", width: "100%" };
+const header = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px' };
+const headerTitle = { margin: 0, fontSize: 24 };
+const headerDesc = { margin: 0, color: '#64748B' };
+const btnPrimary = { padding: '6px 12px', borderRadius: 8, border: 'none', background: '#2563EB', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 14 };
+const tableWrapper = { width: '100%', border: '1px solid #E2E8F0', borderRadius: 12, background: '#fff', overflow: 'hidden' };
+const tableHeader = { display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr 1.5fr 1fr 1fr', padding: '16px 20px', background: '#F8FAFC', color: '#475569', fontSize: 14, fontWeight: 600 };
+const tableRow = { display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr 1.5fr 1fr 1fr', padding: '12px 20px', borderTop: '1px solid #F1F5F9', fontSize: 14, alignItems: 'center' };
 const emptyText = { padding: 24, textAlign: 'center', color: '#64748B' };
-
-const categoryBadge = {
-  padding: '2px 6px',
-  background: '#2563EB',
-  borderRadius: 4,
-  color: '#fff',
-  fontSize: 12,
-};
-categoryBadge.className = "staff-category-badge";
-
-const btnEdit = {
-  padding: '3px 8px',
-  borderRadius: 4,
-  border: 'none',
-  background: '#FACC15',
-  color: '#000',
-  fontSize: 12,
-  cursor: 'pointer',
-};
-btnEdit.className = "staff-btn-edit";
-
-const btnDelete = {
-  padding: '3px 8px',
-  borderRadius: 4,
-  border: 'none',
-  background: '#DC2626',
-  color: '#fff',
-  fontSize: 12,
-  cursor: 'pointer',
-};
-btnDelete.className = "staff-btn-delete";
-
-const btnView = {
-  padding: '3px 8px',
-  borderRadius: 4,
-  border: 'none',
-  background: '#4ADE80',
-  color: '#000',
-  fontSize: 12,
-  cursor: 'pointer',
-};
-btnView.className = "staff-btn-view";
-
+const categoryBadge = { padding: '2px 6px', background: '#2563EB', borderRadius: 4, color: '#fff', fontSize: 12 };
+const btnEdit = { padding: '3px 8px', borderRadius: 4, border: 'none', background: '#FACC15', color: '#000', fontSize: 12, cursor: 'pointer' };
+const btnDelete = { padding: '3px 8px', borderRadius: 4, border: 'none', background: '#DC2626', color: '#fff', fontSize: 12, cursor: 'pointer' };
+const btnView = { padding: '3px 8px', borderRadius: 4, border: 'none', background: '#4ADE80', color: '#000', fontSize: 12, cursor: 'pointer' };
 const overlay = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 };
-const modal = { background: '#F9FAFB', padding: 24, borderRadius: 16, width: 'min(700px, 95vw)', maxHeight: '90vh', overflowY: 'auto', position: 'relative', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 24px rgba(0,0,0,0.15)' };
+const modal = { background: '#F9FAFB', padding: 24, borderRadius: 16, width: 'min(600px, 80vw)', maxHeight: '90vh', overflowY: 'auto', position: 'relative', display: 'flex', flexDirection: 'column', gap: 16, boxShadow: '0 8px 24px rgba(0,0,0,0.15)' };
 const close = { position: 'absolute', top: 12, right: 12, border: 'none', background: 'transparent', fontSize: 18, cursor: 'pointer', color: '#64748B' };
 const spinner = { width: 40, height: 40, border: '4px solid #F1F5F9', borderTop: '4px solid #3B82F6', borderRadius: '50%', animation: 'spin 1s linear infinite' };
 const centered = { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 40 };
 const activityScroll = { maxHeight: 300, overflowY: 'auto', border: '1px solid #E2E8F0', borderRadius: 8, padding: 8 };
-
-const pageWrapper = { flex: 1, padding: '0 24px', display: 'flex', flexDirection: 'column', gap: 24 };
-const cardWrapper = { background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', flex: 1 };
-const title = { fontSize: 20, margin: 0, color: '#111827' };
-const table = { width: '100%', borderCollapse: 'collapse', marginTop: 16 };
-const th = { padding: '12px 16px', textAlign: 'left', background: '#F9FAFB', color: '#111827', fontSize: 14, fontWeight: 600, borderBottom: '2px solid #E5E7EB' };
-const td = { padding: '12px 16px', textAlign: 'left', color: '#374151', fontSize: 14, borderBottom: '1px solid #E5E7EB' };

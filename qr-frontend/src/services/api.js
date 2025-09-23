@@ -1,17 +1,17 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://tokengeneration-f665.onrender.com/api/', // change to your backend URL if deployed
+  baseURL: 'http://127.0.0.1:8000/api/', 
 });
 
-// Add request interceptor to include JWT automatically
+
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
 
-  // Public endpoints (don’t require JWT)
+  
   const publicEndpoints = [
-    'users/categories/', // category list
-              // sidebar menu
+    'users/categories/', 
+              
   ];
 
   const isPublic = publicEndpoints.some((ep) => config.url.includes(ep));

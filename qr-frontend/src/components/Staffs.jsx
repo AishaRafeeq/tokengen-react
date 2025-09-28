@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import API from '../Services/api';
+import API from '../services/api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from "./Sidebar";
@@ -58,10 +58,11 @@ export default function StaffManagement() {
     setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
   };
 
-  const handleCategoryChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions, (opt) => opt.value);
-    setForm({ ...form, categories: selected });
-  };
+ const handleCategoryChange = (e) => {
+  const selected = Array.from(e.target.selectedOptions, (opt) => Number(opt.value));
+  setForm((prev) => ({ ...prev, categories: selected }));
+};
+
 
   const validate = () => {
     const errs = {};
@@ -73,46 +74,63 @@ export default function StaffManagement() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const errs = validate();
-    setErrors(errs);
-    if (Object.keys(errs).length > 0) return;
+  e.preventDefault();
 
-    try {
-      const payload = { ...form, role: 'staff', category_ids: form.categories };
-      delete payload.categories;
-      if (editingId) {
-        await API.put(`users/${editingId}/`, payload);
-        toast.success('Staff updated successfully!');
-      } else {
-        await API.post('users/', payload);
-        toast.success('Staff added successfully!');
-      }
-      resetForm();
-      setShowModal(false);
-      fetchStaffs();
-    } catch {
-      toast.error('Failed to save staff user.');
+  const errs = validate();
+  setErrors(errs);
+  if (Object.keys(errs).length > 0) return;
+
+  try {
+    // Build payload
+    const payload = { ...form, role: 'staff', category_ids: form.categories };
+    delete payload.categories; // remove frontend-only field
+
+    // Only send password if it's non-empty
+    if (editingId && !form.password) {
+      delete payload.password;
     }
-  };
+
+    // Log payload
+    console.log("Payload to backend:", payload);
+
+    if (editingId) {
+      const res = await API.put(`users/${editingId}/`, payload);
+      console.log("Response from PUT:", res.data);
+      toast.success('Staff updated successfully!');
+    } else {
+      const res = await API.post('users/', payload);
+      console.log("Response from POST:", res.data);
+      toast.success('Staff added successfully!');
+    }
+
+    resetForm();
+    setShowModal(false);
+    fetchStaffs();
+  } catch (err) {
+    console.error("Error sending payload:", err.response?.data || err.message);
+    toast.error('Failed to save staff user.');
+  }
+};
+
 
   const handleEdit = (staff) => {
-    setForm({
-      username: staff.username,
-      email: staff.email,
-      first_name: staff.first_name,
-      last_name: staff.last_name,
-      password: '',
-      categories: staff.categories?.map(String) || [],
-      can_scan_qr: staff.can_scan_qr,
-      can_generate_qr: staff.can_generate_qr,
-      can_view_analytics: staff.can_view_analytics,
-      can_verify_qr: staff.can_verify_qr,
-    });
-    setEditingId(staff.id);
-    setErrors({});
-    setShowModal(true);
-  };
+  setForm({
+    username: staff.username,
+    email: staff.email,
+    first_name: staff.first_name,
+    last_name: staff.last_name,
+    password: '',
+    categories: staff.categories?.map(cat => cat.id) || [], // number, not string
+
+    can_scan_qr: staff.can_scan_qr,
+    can_generate_qr: staff.can_generate_qr,
+    can_view_analytics: staff.can_view_analytics,
+    can_verify_qr: staff.can_verify_qr,
+  });
+  setEditingId(staff.id);
+  setErrors({});
+  setShowModal(true);
+};
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this staff?')) return;
@@ -176,7 +194,7 @@ export default function StaffManagement() {
           <button onClick={openNewUserModal} style={btnPrimary}>+ Add Staff</button>
         </div>
 
-        {/* Staff Table */}
+        
         <div style={tableWrapper}>
           <div style={tableHeader}>
             <div>Username</div>
@@ -215,7 +233,7 @@ export default function StaffManagement() {
           )}
         </div>
 
-        {/* 👇 Add/Edit Staff Modal */}
+       
         {showModal && (
           <div style={overlay} onClick={() => setShowModal(false)}>
             <div style={modal} onClick={(e) => e.stopPropagation()}>
@@ -253,26 +271,87 @@ export default function StaffManagement() {
   )}
 
   <div style={formGroup}>
-    <label style={label}>Categories</label>
-    <select
-      multiple
-      value={form.categories}
-      onChange={handleCategoryChange}
-      style={multiSelect}
-    >
-      {categories.map((cat) => (
-        <option key={cat.id} value={cat.id}>{cat.name}</option>
-      ))}
-    </select>
+    
+   <div style={formGroup}>
+  <label style={label}>Categories</label>
+  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+    {categories.map((cat) => (
+      <label key={cat.id} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <input
+  type="checkbox"
+  value={cat.id}
+  checked={form.categories.includes(cat.id)}
+  onChange={(e) => {
+    if (e.target.checked) {
+      setForm(prev => ({ ...prev, categories: [...prev.categories, cat.id] }));
+    } else {
+      setForm(prev => ({ ...prev, categories: prev.categories.filter(id => id !== cat.id) }));
+    }
+  }}
+/>
+
+        {cat.name}
+      </label>
+    ))}
+  </div>
+  {errors.categories && <div style={error}>{errors.categories}</div>}
+</div>
+
     {errors.categories && <div style={error}>{errors.categories}</div>}
   </div>
 
-  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 }}>
-    <label><input type="checkbox" name="can_scan_qr" checked={form.can_scan_qr} onChange={handleChange} /> Can Scan QR</label>
-    <label><input type="checkbox" name="can_generate_qr" checked={form.can_generate_qr} onChange={handleChange} /> Can Generate QR</label>
-    <label><input type="checkbox" name="can_verify_qr" checked={form.can_verify_qr} onChange={handleChange} /> Can Verify QR</label>
-    <label><input type="checkbox" name="can_view_analytics" checked={form.can_view_analytics} onChange={handleChange} /> Can View Analytics</label>
+  <div style={{ marginBottom: 16 }}>
+  <label style={{ ...label, display: "block", marginBottom: 8 }}>Permissions</label>
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+      gap: "12px 16px",
+      padding: "12px",
+      border: "1px solid #ddd",
+      borderRadius: "8px",
+      background: "#fafafa",
+    }}
+  >
+    <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <input
+        type="checkbox"
+        name="can_scan_qr"
+        checked={form.can_scan_qr}
+        onChange={handleChange}
+      />
+      Can Scan QR
+    </label>
+    <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <input
+        type="checkbox"
+        name="can_generate_qr"
+        checked={form.can_generate_qr}
+        onChange={handleChange}
+      />
+      Can Generate QR
+    </label>
+    <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <input
+        type="checkbox"
+        name="can_verify_qr"
+        checked={form.can_verify_qr}
+        onChange={handleChange}
+      />
+      Can Verify QR
+    </label>
+    <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <input
+        type="checkbox"
+        name="can_view_analytics"
+        checked={form.can_view_analytics}
+        onChange={handleChange}
+      />
+      Can View Analytics
+    </label>
   </div>
+</div>
+
 
   <button type="submit" style={btnPrimary}>
     {editingId ? 'Update Staff' : 'Add Staff'}
@@ -283,7 +362,7 @@ export default function StaffManagement() {
           </div>
         )}
 
-        {/* Activity Modal */}
+        
         {activityModal.open && (
           <div style={overlay} onClick={() => setActivityModal({ open: false, staff: null, logs: [], stats: null, loading: false })}>
             <div style={modal} onClick={e => e.stopPropagation()}>

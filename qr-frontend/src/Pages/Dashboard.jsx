@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "../Services/api";
+import axios from  "../services/api";
 import Sidebar from "../components/Sidebar";
 import {
   LineChart,
@@ -102,25 +102,30 @@ export default function AdminDashboard() {
 
             {/* Weekly Scan Trends */}
             <div style={chartWrapper}>
-              <h3 style={chartTitle}>Weekly Scans</h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={weeklyTrend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid stroke="rgba(148,163,184,0.2)" strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="date" stroke="#64748b" tick={{ fontSize: 10 }} />
-                  <YAxis stroke="#64748b" tick={{ fontSize: 10 }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#fff",
-                      borderRadius: 6,
-                      border: "none",
-                      boxShadow: "0 3px 8px rgba(0,0,0,0.1)",
-                      fontSize: "10px",
-                    }}
-                  />
-                  <Line type="monotone" dataKey="scans" stroke="#10B981" strokeWidth={2} dot={{ r: 2 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+  <h3 style={chartTitle}>Weekly Scans</h3>
+  
+  {/* Add marginTop here to push chart downward */}
+  <div style={{ marginTop: 10 }}>
+    <ResponsiveContainer width="100%" height={200}>
+      <LineChart data={weeklyTrend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+        <CartesianGrid stroke="rgba(148,163,184,0.2)" strokeDasharray="3 3" vertical={false} />
+        <XAxis dataKey="date" stroke="#64748b" tick={{ fontSize: 10 }} />
+        <YAxis stroke="#64748b" tick={{ fontSize: 10 }} />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "#fff",
+            borderRadius: 6,
+            border: "none",
+            boxShadow: "0 3px 8px rgba(0,0,0,0.1)",
+            fontSize: "10px",
+          }}
+        />
+        <Line type="monotone" dataKey="scans" stroke="#10B981" strokeWidth={2} dot={{ r: 2 }} />
+      </LineChart>
+    </ResponsiveContainer>
+  </div>
+</div>
+
 
             {/* Verification Status Pie */}
             <div style={pieWrapper}>
@@ -216,7 +221,7 @@ const sidebarFixed = {
 
 const content = {
   flex: 1,
-  marginLeft: 180,
+  marginLeft: 220,
   padding: 12,
   display: "flex",
   justifyContent: "center",
@@ -225,11 +230,11 @@ const content = {
 
 const cardWrapper = {
   width: "100%",
-  maxWidth: 850,
+  maxWidth: 1000,
   background: "#fff",
   borderRadius: 14,
   padding: "20px",
-  minHeight: 500,
+  minHeight: 520,
   boxShadow: "0 6px 24px rgba(0,0,0,0.05)",
   display: "flex",
   flexDirection: "column",
@@ -294,6 +299,7 @@ const chartWrapper = {
   flex: 1,
   minWidth: 200,
   padding: 8,
+  paddingTop: 16, // Add this line or increase the value
   borderRadius: 10,
   background: "#fff",
   boxShadow: "0 3px 12px rgba(37,99,235,0.05)",
@@ -303,6 +309,7 @@ const pieWrapper = {
   flex: 1,
   minWidth: 200,
   padding: 8,
+  paddingTop: 16, // Same here
   borderRadius: 10,
   background: "#fff",
   boxShadow: "0 3px 12px rgba(37,99,235,0.05)",
